@@ -1,0 +1,73 @@
+---
+Resources:
+  SecurityGroup1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH + HTTP
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: tcp
+        FromPort: 22 
+        ToPort: 22
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: tcp
+        FromPort: 80 
+        ToPort: 80
+      Tags:
+      - Key: Name
+        Value: CloudFormationSG-SSH-HTTP1
+  
+  SecurityGroup2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH + HTTP
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: tcp
+        FromPort: 22 
+        ToPort: 22
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: tcp
+        FromPort: 80 
+        ToPort: 80
+      Tags:
+      - Key: Name
+        Value: CloudFormationSG-SSH-HTTP2
+
+  server1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0d8d212151031f51c 
+      InstanceType: t2.micro
+      SecurityGroups: 
+      - !Ref SecurityGroup1
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y
+          yum install httpd -y
+          systemctl enable httpd
+          systemctl start httpd
+          echo "<h2>Hello CloudFormation Server1 this is Randa alojayri</h2>" > /var/www/html/index.html
+      Tags:
+      - Key: Name
+        Value: CloudFormationServer1
+
+  server2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0d8d212151031f51c  
+      InstanceType: t2.micro
+      SecurityGroups: 
+      - !Ref SecurityGroup2
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y
+          yum install httpd -y
+          systemctl enable httpd
+          systemctl start httpd
+          echo "<h2>Hello CloudFormation Server2 this is Randa alojayri</h2>" > /var/www/html/index.html
+      Tags:
+      - Key: Name
+        Value: CloudFormationServer2
